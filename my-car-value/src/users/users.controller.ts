@@ -10,13 +10,17 @@ import {
   Post,
   Query,
   Session,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '../guards/auth.guard';
 import { Serialize } from '../interceptors/serialize.interceptor';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserDto } from './dtos/user.dto';
 import { UsersService } from './users.service';
 import { AuthService } from './auth.service';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { User } from './user.entity';
 
 interface SessionData {
   userId?: number | null;
@@ -55,12 +59,13 @@ export class UsersController {
   }
 
   @Get('whoami')
-  whoAmI(@Session() session: SessionData) {
-    if (!session.userId) {
+  @UseGuards(AuthGuard)
+  whoAmI(@CurrentUser() user: User | null) {
+    if (!user) {
       throw new NotFoundException('not signed in');
     }
 
-    return this.usersService.findOne(session.userId);
+    return user;
   }
 
   @Get()
