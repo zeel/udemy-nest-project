@@ -32,7 +32,8 @@ describe('AuthGuard', () => {
 
   it('reads the session, not currentUser — guards run before interceptors', () => {
     // A guard written against `currentUser` would reject every request,
-    // because CurrentUserInterceptor has not run at guard time.
+    // because CurrentUserMiddleware populates it, and only middleware runs
+    // before guards — an interceptor would be too late.
     expect(
       guard.canActivate(
         contextWith({ session: { userId: 1 }, currentUser: undefined }),

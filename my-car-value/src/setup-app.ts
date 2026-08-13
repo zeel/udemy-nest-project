@@ -18,6 +18,9 @@ export function setupApp(app: INestApplication) {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
+      // Without this the pipe validates a transformed copy but hands the
+      // handler the raw payload, so @Transform on query DTOs has no effect.
+      transform: true,
     }),
   );
 }
